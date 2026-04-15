@@ -1,0 +1,2 @@
+com.example.carsetting.shared
+xml automotive_app_desc
