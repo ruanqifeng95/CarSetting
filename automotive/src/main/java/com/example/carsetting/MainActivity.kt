@@ -20,6 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,56 +41,85 @@ fun CarSettingsScreen() {
     var selectedTab by remember { mutableStateOf(0) }
     
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(modifier = Modifier
+        modifier = Modifier
             .fillMaxSize()
-            .padding(WindowInsets.statusBars.asPaddingValues())
-        ) {
-            Row(
+            .padding(WindowInsets.systemBars.asPaddingValues()),
+        color = Color(0xFFBDBDBD)
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxHeight()
+                    .width(200.dp)
+                    .background(Color(0xFFBDBDBD)),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = "车辆设置",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            PrimaryTabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = MaterialTheme.colorScheme.surface
-            ) {
-                Tab(
+                NavigationDrawerItem(
+                    label = { Text("驾驶", color = Color.Black) },
+                    icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null, tint = Color.Black) },
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("驾驶") },
-                    icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null) }
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = Color.White,
+                        unselectedContainerColor = Color.Transparent,
+                        selectedIconColor = Color.Black,
+                        unselectedIconColor = Color.Black,
+                        selectedTextColor = Color.Black,
+                        unselectedTextColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
-                Tab(
+                NavigationDrawerItem(
+                    label = { Text("舒适", color = Color.Black) },
+                    icon = { Icon(Icons.Default.Air, contentDescription = null, tint = Color.Black) },
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("舒适") },
-                    icon = { Icon(Icons.Default.Air, contentDescription = null) }
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = Color.White,
+                        unselectedContainerColor = Color.Transparent,
+                        selectedIconColor = Color.Black,
+                        unselectedIconColor = Color.Black,
+                        selectedTextColor = Color.Black,
+                        unselectedTextColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
-                Tab(
+                NavigationDrawerItem(
+                    label = { Text("安全", color = Color.Black) },
+                    icon = { Icon(Icons.Default.Security, contentDescription = null, tint = Color.Black) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    text = { Text("安全") },
-                    icon = { Icon(Icons.Default.Security, contentDescription = null) }
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = Color.White,
+                        unselectedContainerColor = Color.Transparent,
+                        selectedIconColor = Color.Black,
+                        unselectedIconColor = Color.Black,
+                        selectedTextColor = Color.Black,
+                        unselectedTextColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
             }
-
-            when (selectedTab) {
-                0 -> DrivingSettingsTab()
-                1 -> ComfortSettingsTab()
-                2 -> SafetySettingsTab()
+            
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                when (selectedTab) {
+                    0 -> DrivingSettingsTab()
+                    1 -> ComfortSettingsTab()
+                    2 -> SafetySettingsTab()
+                }
             }
         }
     }
@@ -232,7 +264,7 @@ fun SettingCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = Color(0xFFBDBDBD)
         )
     ) {
         Column(
@@ -250,13 +282,14 @@ fun SettingCard(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = Color.Black,
                         modifier = Modifier.size(32.dp)
                     )
                     Text(
                         text = title,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
                     )
                 }
             }
@@ -271,7 +304,7 @@ fun SettingCard(
                     FilterChip(
                         selected = selectedOption == option,
                         onClick = { selectedOption = option },
-                        label = { Text(option) },
+                        label = { Text(option, color = Color.Black) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -291,7 +324,7 @@ fun ToggleSettingCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = Color(0xFFBDBDBD)
         )
     ) {
         Row(
@@ -309,19 +342,20 @@ fun ToggleSettingCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.Black,
                     modifier = Modifier.size(32.dp)
                 )
                 Column {
                     Text(
                         text = title,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
                     )
                     Text(
                         text = description,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = Color.Black
                     )
                 }
             }
@@ -347,7 +381,7 @@ fun SliderSettingCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = Color(0xFFBDBDBD)
         )
     ) {
         Column(
@@ -360,13 +394,14 @@ fun SliderSettingCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.Black,
                     modifier = Modifier.size(32.dp)
                 )
                 Text(
                     text = title,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
                 )
             }
             
@@ -383,7 +418,7 @@ fun SliderSettingCard(
             Text(
                 text = labels.getOrNull((sliderPosition - valueRange.first).toInt()) ?: "",
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Color.Black,
                 modifier = Modifier.align(Alignment.End)
             )
         }
