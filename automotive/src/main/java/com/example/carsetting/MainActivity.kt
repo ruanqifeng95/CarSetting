@@ -4,23 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.car.app.CarAppService
-import androidx.car.app.Session
-import androidx.car.app.validation.HostValidator
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.RotateRight
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -36,7 +33,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarSettingsScreen() {
     var selectedTab by remember { mutableStateOf(0) }
@@ -45,7 +41,10 @@ fun CarSettingsScreen() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(WindowInsets.statusBars.asPaddingValues())
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -60,8 +59,8 @@ fun CarSettingsScreen() {
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
-            
-            TabRow(
+
+            PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = MaterialTheme.colorScheme.surface
             ) {
@@ -84,7 +83,7 @@ fun CarSettingsScreen() {
                     icon = { Icon(Icons.Default.Security, contentDescription = null) }
                 )
             }
-            
+
             when (selectedTab) {
                 0 -> DrivingSettingsTab()
                 1 -> ComfortSettingsTab()
@@ -129,7 +128,7 @@ fun DrivingSettingsTab() {
         item {
             SliderSettingCard(
                 title = "转向力度",
-                icon = Icons.Default.RotateRight,
+                icon = Icons.AutoMirrored.Filled.RotateRight,
                 valueRange = 1..3,
                 labels = listOf("轻便", "标准", "运动")
             )
@@ -173,7 +172,7 @@ fun ComfortSettingsTab() {
         item {
             SettingCard(
                 title = "音量设置",
-                icon = Icons.Default.VolumeUp,
+                icon = Icons.AutoMirrored.Filled.VolumeUp,
                 options = listOf("低", "中", "高")
             )
         }
@@ -222,7 +221,6 @@ fun SafetySettingsTab() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingCard(
     title: String,
@@ -389,6 +387,14 @@ fun SliderSettingCard(
                 modifier = Modifier.align(Alignment.End)
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCarSettingsScreen() {
+    CarSettingsTheme {
+        CarSettingsScreen()
     }
 }
 
