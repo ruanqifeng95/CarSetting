@@ -38,8 +38,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CarSettingsScreen() {
-    var selectedTab by remember { mutableStateOf(0) }
-    
+    var selectedTab by remember { mutableIntStateOf(0) }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -109,7 +109,7 @@ fun CarSettingsScreen() {
                     shape = RoundedCornerShape(12.dp)
                 )
             }
-            
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -137,10 +137,10 @@ fun DrivingSettingsTab() {
             SettingCard(
                 title = "驾驶模式",
                 icon = Icons.Default.Speed,
-                options = listOf("经济", "标准", "运动", "越野")
+                options = listOf("纯电", "混动", "运动", "越野")
             )
         }
-        
+
         item {
             ToggleSettingCard(
                 title = "自动启停",
@@ -148,7 +148,7 @@ fun DrivingSettingsTab() {
                 description = "在停车时自动关闭发动机"
             )
         }
-        
+
         item {
             ToggleSettingCard(
                 title = "能量回收",
@@ -156,7 +156,7 @@ fun DrivingSettingsTab() {
                 description = "减速时回收能量"
             )
         }
-        
+
         item {
             SliderSettingCard(
                 title = "转向力度",
@@ -183,7 +183,7 @@ fun ComfortSettingsTab() {
                 description = "自动调节温度和风量"
             )
         }
-        
+
         item {
             SliderSettingCard(
                 title = "座椅温度",
@@ -192,7 +192,7 @@ fun ComfortSettingsTab() {
                 labels = listOf("关闭", "低", "中", "高")
             )
         }
-        
+
         item {
             ToggleSettingCard(
                 title = "氛围灯",
@@ -200,7 +200,7 @@ fun ComfortSettingsTab() {
                 description = "车内氛围照明"
             )
         }
-        
+
         item {
             SettingCard(
                 title = "音量设置",
@@ -226,7 +226,7 @@ fun SafetySettingsTab() {
                 description = "监测盲区车辆"
             )
         }
-        
+
         item {
             ToggleSettingCard(
                 title = "车道保持辅助",
@@ -234,7 +234,7 @@ fun SafetySettingsTab() {
                 description = "帮助保持在车道内"
             )
         }
-        
+
         item {
             ToggleSettingCard(
                 title = "碰撞预警",
@@ -242,7 +242,7 @@ fun SafetySettingsTab() {
                 description = "前方碰撞警告"
             )
         }
-        
+
         item {
             ToggleSettingCard(
                 title = "自动紧急制动",
@@ -260,7 +260,7 @@ fun SettingCard(
     options: List<String>
 ) {
     var selectedOption by remember { mutableStateOf(options[0]) }
-    
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -275,27 +275,16 @@ fun SettingCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = Color.Black,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Text(
-                        text = title,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Black
-                    )
-                }
+                Text(
+                    text = title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -305,7 +294,21 @@ fun SettingCard(
                         selected = selectedOption == option,
                         onClick = { selectedOption = option },
                         label = { Text(option, color = Color.Black) },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color.White,
+                            containerColor = Color.Transparent,
+                            selectedLabelColor = Color.Black,
+                            labelColor = Color.Black
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = selectedOption == option,
+                            borderColor = Color.Transparent,
+                            selectedBorderColor = Color.Transparent,
+                            borderWidth = 0.dp,
+                            selectedBorderWidth = 0.dp
+                        )
                     )
                 }
             }
@@ -320,7 +323,7 @@ fun ToggleSettingCard(
     description: String
 ) {
     var enabled by remember { mutableStateOf(false) }
-    
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -359,7 +362,7 @@ fun ToggleSettingCard(
                     )
                 }
             }
-            
+
             Switch(
                 checked = enabled,
                 onCheckedChange = { enabled = it },
@@ -376,8 +379,8 @@ fun SliderSettingCard(
     valueRange: IntRange,
     labels: List<String>
 ) {
-    var sliderPosition by remember { mutableStateOf(valueRange.first.toFloat()) }
-    
+    var sliderPosition by remember { mutableFloatStateOf(valueRange.first.toFloat()) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -404,9 +407,9 @@ fun SliderSettingCard(
                     color = Color.Black
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Slider(
                 value = sliderPosition,
                 onValueChange = { sliderPosition = it },
@@ -414,7 +417,7 @@ fun SliderSettingCard(
                 steps = valueRange.last - valueRange.first - 1,
                 modifier = Modifier.fillMaxWidth()
             )
-            
+
             Text(
                 text = labels.getOrNull((sliderPosition - valueRange.first).toInt()) ?: "",
                 fontSize = 14.sp,
