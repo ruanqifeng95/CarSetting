@@ -196,7 +196,7 @@ fun DrivingModeCard(
                     FilterChip(
                         selected = state.drivingMode == mode,
                         onClick = { onIntent(DrivingIntent.ChangeDrivingMode(mode)) },
-                        label = { Text(mode.toDisplayString()) },
+                        label = { Text(mode.displayName) },
                         modifier = Modifier.weight(1f)
                     )
                 }

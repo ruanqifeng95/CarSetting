@@ -1,33 +1,17 @@
 package com.example.carsetting.model
+enum class DrivingMode(val displayName: String) {
+    Eco("经济"),
+    Standard("标准"),
+    Sport("运动"),
+    OffRoad("越野");
 
-sealed class DrivingMode {
-    object Eco : DrivingMode()
-    object Standard : DrivingMode()
-    object Sport : DrivingMode()
-    object OffRoad : DrivingMode()
-    
-    fun toDisplayString(): String {
-        return when (this) {
-            is Eco -> "经济"
-            is Standard -> "标准"
-            is Sport -> "运动"
-            is OffRoad -> "越野"
-        }
-    }
-    
     companion object {
-        fun fromString(value: String): DrivingMode {
-            return when (value) {
-                "经济" -> Eco
-                "标准" -> Standard
-                "运动" -> Sport
-                "越野" -> OffRoad
-                else -> Standard
-            }
+        fun fromDisplayName(value: String): DrivingMode {
+            return entries.find { it.displayName == value }
+                ?: Standard
         }
     }
 }
-
 data class DrivingSettingsState(
     val drivingMode: DrivingMode = DrivingMode.Standard,
     val autoStartStop: Boolean = false,
