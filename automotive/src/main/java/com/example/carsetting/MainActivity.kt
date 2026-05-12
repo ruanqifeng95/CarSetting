@@ -20,6 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.carsetting.model.DrivingIntent
+import com.example.carsetting.model.DrivingMode
+import com.example.carsetting.model.DrivingSettingsState
+import com.example.carsetting.viewmodel.DrivingSettingsViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +42,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CarSettingsScreen() {
     var selectedTab by remember { mutableStateOf(0) }
-    
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -85,7 +91,10 @@ fun CarSettingsScreen() {
             }
 
             when (selectedTab) {
-                0 -> DrivingSettingsTab()
+                0 -> {
+                    val viewModel: DrivingSettingsViewModel = viewModel()
+                    DrivingSettingsTab(viewModel)
+                }
                 1 -> ComfortSettingsTab()
                 2 -> SafetySettingsTab()
             }
@@ -94,7 +103,9 @@ fun CarSettingsScreen() {
 }
 
 @Composable
-fun DrivingSettingsTab() {
+fun DrivingSettingsTab(viewModel: DrivingSettingsViewModel = viewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -102,35 +113,250 @@ fun DrivingSettingsTab() {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            SettingCard(
-                title = "驾驶模式",
-                icon = Icons.Default.Speed,
-                options = listOf("经济", "标准", "运动", "越野")
+            DrivingModeCard(
+                state = state,
+                onIntent = { viewModel.handleIntent(it) }
             )
         }
         
         item {
-            ToggleSettingCard(
-                title = "自动启停",
-                icon = Icons.Default.PlayCircle,
-                description = "在停车时自动关闭发动机"
+            AutoStartStopCard(
+                state = state,
+                onIntent = { viewModel.handleIntent(it) }
             )
         }
         
         item {
-            ToggleSettingCard(
-                title = "能量回收",
-                icon = Icons.Default.BatteryChargingFull,
-                description = "减速时回收能量"
+            EnergyRecoveryCard(
+                state = state,
+                onIntent = { viewModel.handleIntent(it) }
             )
         }
         
         item {
-            SliderSettingCard(
-                title = "转向力度",
-                icon = Icons.AutoMirrored.Filled.RotateRight,
-                valueRange = 1..3,
-                labels = listOf("轻便", "标准", "运动")
+            SteeringEffortCard(
+                state = state,
+                onIntent = { viewModel.handleIntent(it) }
+            )
+        }
+    }
+}
+
+@Composable
+fun DrivingModeCard(
+    state: DrivingSettingsState,
+    onIntent: (DrivingIntent) -> Unit
+) {
+    val options = listOf(
+        DrivingMode.Eco,
+        DrivingMode.Standard,
+        DrivingMode.Sport,
+        DrivingMode.OffRoad
+    )
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Speed,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Text(
+                        text = "驾驶模式",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                options.forEach { mode ->
+                    FilterChip(
+                        selected = state.drivingMode == mode,
+                        onClick = { onIntent(DrivingIntent.ChangeDrivingMode(mode)) },
+                        label = { Text(mode.toDisplayString()) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AutoStartStopCard(
+    state: DrivingSettingsState,
+    onIntent: (DrivingIntent) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Column {
+                    Text(
+                        text = "自动启停",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "在停车时自动关闭发动机",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            
+            Switch(
+                checked = state.autoStartStop,
+                onCheckedChange = { onIntent(DrivingIntent.ToggleAutoStartStop(it)) },
+                modifier = Modifier.size(48.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun EnergyRecoveryCard(
+    state: DrivingSettingsState,
+    onIntent: (DrivingIntent) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.BatteryChargingFull,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Column {
+                    Text(
+                        text = "能量回收",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "减速时回收能量",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            
+            Switch(
+                checked = state.energyRecovery,
+                onCheckedChange = { onIntent(DrivingIntent.ToggleEnergyRecovery(it)) },
+                modifier = Modifier.size(48.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun SteeringEffortCard(
+    state: DrivingSettingsState,
+    onIntent: (DrivingIntent) -> Unit
+) {
+    val labels = listOf("轻便", "标准", "运动")
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.RotateRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Text(
+                    text = "转向力度",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Slider(
+                value = state.steeringEffort.toFloat(),
+                onValueChange = { onIntent(DrivingIntent.ChangeSteeringEffort(it.toInt())) },
+                valueRange = 1f..3f,
+                steps = 1,
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            Text(
+                text = labels.getOrNull(state.steeringEffort - 1) ?: "",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.End)
             )
         }
     }
