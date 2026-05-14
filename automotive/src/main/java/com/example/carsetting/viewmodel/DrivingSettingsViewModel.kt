@@ -1,15 +1,21 @@
 package com.example.carsetting.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.carsetting.model.DrivingIntent
 import com.example.carsetting.model.DrivingMode
 import com.example.carsetting.model.DrivingSettingsState
+import com.example.carsetting.repository.DrivingSettingsRepository
+import com.example.carsetting.repository.FakeDrivingSettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class DrivingSettingsViewModel : ViewModel() {
+class DrivingSettingsViewModel(
+    private val repository: DrivingSettingsRepository = FakeDrivingSettingsRepository()
+) : ViewModel() {
     
     private val _state = MutableStateFlow(DrivingSettingsState())
     val state: StateFlow<DrivingSettingsState> = _state.asStateFlow()
@@ -64,18 +70,32 @@ class DrivingSettingsViewModel : ViewModel() {
             )
         }
     }
-    
+
     private fun loadSettings() {
-        _state.update { it.copy(isLoading = true) }
-        
-        _state.update { currentState ->
-            currentState.copy(
-                isLoading = false,
-                drivingMode = DrivingMode.Standard,
-                autoStartStop = false,
-                energyRecovery = true,
-                steeringEffort = 1
-            )
+
+        viewModelScope.launch {
+
+            _state.update {
+                it.copy(isLoading = true)
+            }
+
+            try {
+
+                val settings = repository.loadSettings()
+
+                _state.update {
+                    settings.copy(isLoading = false)
+                }
+
+            } catch (e: Exception) {
+
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message
+                    )
+                }
+            }
         }
     }
     
