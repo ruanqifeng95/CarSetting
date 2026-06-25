@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
@@ -15,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +29,8 @@ import com.example.carsetting.model.DrivingMode
 import com.example.carsetting.model.DrivingSettingsState
 import com.example.carsetting.viewmodel.DrivingSettingsViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
+import com.example.carsetting.navigation.CarNavGraph
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +46,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CarSettingsScreen() {
-    var selectedTab by remember { mutableStateOf(0) }
+    val navController = rememberNavController()
+    var selectedTab by remember { mutableIntStateOf(0) }
+
+    // Sync selectedTab with navigation backstack
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            val route = backStackEntry.destination.route
+            selectedTab = when (route) {
+                "driving", "battery_preservation" -> 0
+                "comfort" -> 1
+                "safety" -> 2
+                else -> 0
+            }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -72,38 +91,58 @@ fun CarSettingsScreen() {
             ) {
                 Tab(
                     selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
+                    onClick = {
+                        if (selectedTab != 0) {
+                            navController.navigate("driving") {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                        }
+                    },
                     text = { Text("驾驶") },
                     icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null) }
                 )
                 Tab(
                     selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
+                    onClick = {
+                        if (selectedTab != 1) {
+                            navController.navigate("comfort") {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                        }
+                    },
                     text = { Text("舒适") },
                     icon = { Icon(Icons.Default.Air, contentDescription = null) }
                 )
                 Tab(
                     selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
+                    onClick = {
+                        if (selectedTab != 2) {
+                            navController.navigate("safety") {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                        }
+                    },
                     text = { Text("安全") },
                     icon = { Icon(Icons.Default.Security, contentDescription = null) }
                 )
             }
 
-            when (selectedTab) {
-                0 -> {
-                    val viewModel: DrivingSettingsViewModel = viewModel()
-                    DrivingSettingsTab(viewModel)
-                }
-                1 -> ComfortSettingsTab()
-                2 -> SafetySettingsTab()
-            }
+            CarNavGraph(
+                navController = navController,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
 
 @Composable
-fun DrivingSettingsTab(viewModel: DrivingSettingsViewModel = viewModel()) {
+fun DrivingSettingsTab(
+    viewModel: DrivingSettingsViewModel = viewModel(),
+    onNavigateToBatteryPreservation: () -> Unit
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     
     LazyColumn(
@@ -117,6 +156,10 @@ fun DrivingSettingsTab(viewModel: DrivingSettingsViewModel = viewModel()) {
                 state = state,
                 onIntent = { viewModel.handleIntent(it) }
             )
+        }
+
+        item {
+            BatteryPreservationEntryCard(onClick = onNavigateToBatteryPreservation)
         }
         
         item {
@@ -200,6 +243,145 @@ fun DrivingModeCard(
                         modifier = Modifier.weight(1f)
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun BatteryPreservationEntryCard(onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.BatteryChargingFull,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Column {
+                    Text(
+                        text = "行车保电",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "设置混合动力系统的保电策略",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+        }
+    }
+}
+
+@Composable
+fun BatteryPreservationScreen(onBack: () -> Unit) {
+    var preservationMode by remember { mutableIntStateOf(0) } // 0: 智能, 1: 强制
+    var targetSoc by remember { mutableFloatStateOf(50f) }
+    val isSocEnabled = preservationMode == 1
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 24.dp)
+        ) {
+            IconButton(onClick = onBack) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+            }
+            Text(
+                text = "行车保电",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("保电模式", fontWeight = FontWeight.Medium, fontSize = 18.sp)
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(
+                        selected = preservationMode == 0,
+                        onClick = { preservationMode = 0 },
+                        label = { Text("智能保电") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    FilterChip(
+                        selected = preservationMode == 1,
+                        onClick = { preservationMode = 1 },
+                        label = { Text("强制保电") },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .alpha(if (isSocEnabled) 1f else 0.5f)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "目标电量",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp,
+                        color = if (isSocEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "${targetSoc.toInt()}%",
+                        color = if (isSocEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Slider(
+                    value = targetSoc,
+                    onValueChange = { targetSoc = it },
+                    valueRange = 20f..80f,
+                    steps = 5,
+                    enabled = isSocEnabled,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = if (isSocEnabled) "强制保电下，系统将尽量维持电量在设定值附近" else "智能保电下，系统将自动管理电量，无需手动设置",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
@@ -568,7 +750,7 @@ fun SliderSettingCard(
     valueRange: IntRange,
     labels: List<String>
 ) {
-    var sliderPosition by remember { mutableStateOf(valueRange.first.toFloat()) }
+    var sliderPosition by remember { mutableFloatStateOf(valueRange.first.toFloat()) }
     
     Card(
         modifier = Modifier.fillMaxWidth(),

@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.car.app)
     implementation(libs.androidx.car.app.automotive)
+    implementation(libs.androidx.navigation.compose)
     implementation(project(":shared"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
