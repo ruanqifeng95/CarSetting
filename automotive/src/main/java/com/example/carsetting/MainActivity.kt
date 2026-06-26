@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -29,8 +30,10 @@ import com.example.carsetting.model.DrivingMode
 import com.example.carsetting.model.DrivingSettingsState
 import com.example.carsetting.viewmodel.DrivingSettingsViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
-import com.example.carsetting.navigation.CarNavGraph
+import androidx.navigation.compose.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.animation.core.tween
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,20 +50,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CarSettingsScreen() {
     val navController = rememberNavController()
-    var selectedTab by remember { mutableIntStateOf(0) }
+    val pagerState = rememberPagerState(pageCount = { 3 })
+    val scope = rememberCoroutineScope()
+    
+    // Check if we are in a sub-page (like battery preservation)
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val isMainScreen = currentRoute != "battery_preservation"
 
-    // Sync selectedTab with navigation backstack
-    LaunchedEffect(navController) {
-        navController.currentBackStackEntryFlow.collect { backStackEntry ->
-            val route = backStackEntry.destination.route
-            selectedTab = when (route) {
-                "driving", "battery_preservation" -> 0
-                "comfort" -> 1
-                "safety" -> 2
-                else -> 0
-            }
-        }
-    }
+    // Sync selectedTab with pager index
+    val selectedTab = pagerState.currentPage
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -92,11 +91,12 @@ fun CarSettingsScreen() {
                 Tab(
                     selected = selectedTab == 0,
                     onClick = {
-                        if (selectedTab != 0) {
-                            navController.navigate("driving") {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
+                        scope.launch {
+                            if (!isMainScreen) navController.popBackStack()
+                            pagerState.animateScrollToPage(
+                                page = 0,
+                                animationSpec = tween(durationMillis = 500)
+                            )
                         }
                     },
                     text = { Text("驾驶") },
@@ -105,11 +105,12 @@ fun CarSettingsScreen() {
                 Tab(
                     selected = selectedTab == 1,
                     onClick = {
-                        if (selectedTab != 1) {
-                            navController.navigate("comfort") {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
+                        scope.launch {
+                            if (!isMainScreen) navController.popBackStack()
+                            pagerState.animateScrollToPage(
+                                page = 1,
+                                animationSpec = tween(durationMillis = 500)
+                            )
                         }
                     },
                     text = { Text("舒适") },
@@ -118,11 +119,12 @@ fun CarSettingsScreen() {
                 Tab(
                     selected = selectedTab == 2,
                     onClick = {
-                        if (selectedTab != 2) {
-                            navController.navigate("safety") {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
+                        scope.launch {
+                            if (!isMainScreen) navController.popBackStack()
+                            pagerState.animateScrollToPage(
+                                page = 2,
+                                animationSpec = tween(durationMillis = 500)
+                            )
                         }
                     },
                     text = { Text("安全") },
@@ -130,10 +132,30 @@ fun CarSettingsScreen() {
                 )
             }
 
-            CarNavGraph(
+            // Content Area
+            NavHost(
                 navController = navController,
+                startDestination = "main",
                 modifier = Modifier.weight(1f)
-            )
+            ) {
+                composable("main") {
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxSize()
+                    ) { page ->
+                        when (page) {
+                            0 -> DrivingSettingsTab(onNavigateToBatteryPreservation = {
+                                navController.navigate("battery_preservation")
+                            })
+                            1 -> ComfortSettingsTab()
+                            2 -> SafetySettingsTab()
+                        }
+                    }
+                }
+                composable("battery_preservation") {
+                    BatteryPreservationScreen(onBack = { navController.popBackStack() })
+                }
+            }
         }
     }
 }
@@ -146,9 +168,13 @@ fun DrivingSettingsTab(
     val state by viewModel.state.collectAsStateWithLifecycle()
     
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = 120.dp // 增加底部边距，防止被车机系统空调栏遮挡
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -547,9 +573,13 @@ fun SteeringEffortCard(
 @Composable
 fun ComfortSettingsTab() {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = 120.dp // 为底部空调栏预留空间
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -590,9 +620,13 @@ fun ComfortSettingsTab() {
 @Composable
 fun SafetySettingsTab() {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = 120.dp // 为底部空调栏预留空间
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
