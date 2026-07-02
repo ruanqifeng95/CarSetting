@@ -63,14 +63,14 @@ fun CarSettingsScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "车辆设置",
+                    text = "Car Setting",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
 
-            TabRow(
+            PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = MaterialTheme.colorScheme.surface
             ) {
@@ -85,7 +85,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("驾驶") },
+                    text = { Text("Driving") },
                     icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null) }
                 )
                 Tab(
@@ -99,7 +99,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("舒适") },
+                    text = { Text("Comfort") },
                     icon = { Icon(Icons.Default.Air, contentDescription = null) }
                 )
                 Tab(
@@ -113,7 +113,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("安全") },
+                    text = { Text("Safety") },
                     icon = { Icon(Icons.Default.Security, contentDescription = null) }
                 )
                 Tab(
@@ -127,7 +127,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("互联") },
+                    text = { Text("Connectivity") },
                     icon = { Icon(Icons.Default.Link, contentDescription = null) }
                 )
             }

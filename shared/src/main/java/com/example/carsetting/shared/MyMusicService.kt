@@ -1,18 +1,20 @@
 package com.example.carsetting.shared
 
-import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat.MediaItem
-import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
-import androidx.media.MediaBrowserServiceCompat
-import java.util.ArrayList
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.LibraryResult
+import androidx.media3.session.MediaLibraryService
+import androidx.media3.session.MediaSession
+import com.google.common.collect.ImmutableList
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
 
-class MyMusicService : MediaBrowserServiceCompat() {
+class MyMusicService : MediaLibraryService() {
 
-    private lateinit var session: MediaSessionCompat
-    private var currentIndex = 0
+    private var mediaLibrarySession: MediaLibrarySession? = null
+    private lateinit var player: Player
 
     private data class Song(val title: String, val artist: String)
     private val playlist = listOf(
@@ -23,87 +25,77 @@ class MyMusicService : MediaBrowserServiceCompat() {
         Song("稻香", "周杰伦")
     )
 
-    private val callback = object : MediaSessionCompat.Callback() {
-        override fun onPlay() {
-            updatePlaybackState(PlaybackStateCompat.STATE_PLAYING)
-        }
-
-        override fun onPause() {
-            updatePlaybackState(PlaybackStateCompat.STATE_PAUSED)
-        }
-
-        override fun onStop() {
-            updatePlaybackState(PlaybackStateCompat.STATE_STOPPED)
-        }
-
-        override fun onSkipToNext() {
-            currentIndex = (currentIndex + 1) % playlist.size
-            updateMetadata(playlist[currentIndex].title, playlist[currentIndex].artist)
-        }
-
-        override fun onSkipToPrevious() {
-            currentIndex = (currentIndex - 1 + playlist.size) % playlist.size
-            updateMetadata(playlist[currentIndex].title, playlist[currentIndex].artist)
-        }
-    }
-
     override fun onCreate() {
         super.onCreate()
-
-        session = MediaSessionCompat(this, "MyMusicService")
-        session.setCallback(callback)
+        player = ExoPlayer.Builder(this).build()
         
-        // 将 Session 的 Token 设置给 MediaBrowserService
-        sessionToken = session.sessionToken
+        // Initialize MediaLibrarySession
+        mediaLibrarySession = MediaLibrarySession.Builder(this, player, object : MediaLibrarySession.Callback {
+            override fun onGetLibraryRoot(
+                session: MediaLibrarySession,
+                browser: MediaSession.ControllerInfo,
+                params: LibraryParams?
+            ): ListenableFuture<LibraryResult<MediaItem>> {
+                val rootItem = MediaItem.Builder()
+                    .setMediaId("root")
+                    .setMediaMetadata(MediaMetadata.Builder().setIsBrowsable(true).setIsPlayable(false).build())
+                    .build()
+                return Futures.immediateFuture(LibraryResult.ofItem(rootItem, params))
+            }
 
-        // 初始化模拟数据
-        updateMetadata(playlist[currentIndex].title, playlist[currentIndex].artist)
-        updatePlaybackState(PlaybackStateCompat.STATE_PAUSED)
+            override fun onGetChildren(
+                session: MediaLibrarySession,
+                browser: MediaSession.ControllerInfo,
+                parentId: String,
+                page: Int,
+                pageSize: Int,
+                params: LibraryParams?
+            ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+                val mediaItems = playlist.mapIndexed { index, song ->
+                    MediaItem.Builder()
+                        .setMediaId("song_$index")
+                        .setMediaMetadata(
+                            MediaMetadata.Builder()
+                                .setTitle(song.title)
+                                .setArtist(song.artist)
+                                .setIsBrowsable(false)
+                                .setIsPlayable(true)
+                                .build()
+                        )
+                        .build()
+                }
+                return Futures.immediateFuture(LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), params))
+            }
+        }).build()
+
+        // Set mock data to player
+        val mediaItems = playlist.map { song ->
+            MediaItem.Builder()
+                .setMediaId(song.title)
+                .setUri("http://example.com/${song.title}.mp3") // Set a dummy URI to avoid NPE in ExoPlayer
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(song.title)
+                        .setArtist(song.artist)
+                        .build()
+                )
+                .build()
+        }
+        player.setMediaItems(mediaItems)
+        player.repeatMode = Player.REPEAT_MODE_ALL
+        player.prepare()
     }
 
-    private fun updateMetadata(title: String, artist: String) {
-        val metadata = MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-            .build()
-        session.setMetadata(metadata)
-    }
-
-    private fun updatePlaybackState(state: Int) {
-        val stateBuilder = PlaybackStateCompat.Builder()
-            .setActions(
-                PlaybackStateCompat.ACTION_PLAY or
-                        PlaybackStateCompat.ACTION_PAUSE or
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                        PlaybackStateCompat.ACTION_STOP
-            )
-            .setState(state, 0, 1.0f)
-        session.setPlaybackState(stateBuilder.build())
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? {
+        return mediaLibrarySession
     }
 
     override fun onDestroy() {
-        session.release()
-    }
-
-    override fun onGetRoot(
-        clientPackageName: String,
-        clientUid: Int,
-        rootHints: Bundle?
-    ): BrowserRoot {
-        return BrowserRoot("root", null)
-    }
-
-    override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaItem>>) {
-        val mediaItems = ArrayList<MediaItem>()
-        playlist.forEachIndexed { index, song ->
-            val description = MediaDescriptionCompat.Builder()
-                .setMediaId("song_$index")
-                .setTitle(song.title)
-                .setSubtitle(song.artist)
-                .build()
-            mediaItems.add(MediaItem(description, MediaItem.FLAG_PLAYABLE))
+        mediaLibrarySession?.run {
+            player.release()
+            release()
+            mediaLibrarySession = null
         }
-        result.sendResult(mediaItems)
+        super.onDestroy()
     }
 }

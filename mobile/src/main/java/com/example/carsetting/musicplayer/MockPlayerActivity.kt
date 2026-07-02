@@ -1,12 +1,7 @@
 package com.example.carsetting.musicplayer
 
 import android.content.ComponentName
-import android.content.Context
 import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -27,59 +22,38 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import com.example.carsetting.shared.MyMusicService
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 
 class MockPlayerActivity : ComponentActivity() {
 
-    private lateinit var mediaBrowser: MediaBrowserCompat
-    private var controller by mutableStateOf<MediaControllerCompat?>(null)
-    private var metadata by mutableStateOf<MediaMetadataCompat?>(null)
-    private var playbackState by mutableStateOf<PlaybackStateCompat?>(null)
+    private var controllerFuture: ListenableFuture<MediaController>? = null
+    private var controller by mutableStateOf<MediaController?>(null)
+    private var metadata by mutableStateOf<MediaMetadata>(MediaMetadata.EMPTY)
+    private var playWhenReady by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val connectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
-            override fun onConnected() {
-                val mediaController = MediaControllerCompat(this@MockPlayerActivity as Context, mediaBrowser.sessionToken)
-                controller = mediaController
-                metadata = mediaController.metadata
-                playbackState = mediaController.playbackState
-
-                mediaController.registerCallback(object : MediaControllerCompat.Callback() {
-                    override fun onMetadataChanged(newMetadata: MediaMetadataCompat?) {
-                        metadata = newMetadata
-                    }
-
-                    override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-                        playbackState = state
-                    }
-                })
-            }
-        }
-
-        mediaBrowser = MediaBrowserCompat(
-            this as Context,
-            ComponentName(this as Context, MyMusicService::class.java),
-            connectionCallback,
-            null
-        )
 
         setContent {
             MaterialTheme {
                 PlayerScreen(
                     metadata = metadata,
-                    playbackState = playbackState,
+                    isPlaying = playWhenReady,
                     onPlayPause = {
-                        val state = playbackState?.state
-                        if (state == PlaybackStateCompat.STATE_PLAYING) {
-                            controller?.transportControls?.pause()
+                        if (playWhenReady) {
+                            controller?.pause()
                         } else {
-                            controller?.transportControls?.play()
+                            controller?.play()
                         }
                     },
-                    onNext = { controller?.transportControls?.skipToNext() },
-                    onPrevious = { controller?.transportControls?.skipToPrevious() }
+                    onNext = { controller?.seekToNext() },
+                    onPrevious = { controller?.seekToPrevious() }
                 )
             }
         }
@@ -87,26 +61,45 @@ class MockPlayerActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        mediaBrowser.connect()
+        val sessionToken = SessionToken(this, ComponentName(this, MyMusicService::class.java))
+        controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
+        controllerFuture?.addListener({
+            val mediaController = controllerFuture?.get() ?: return@addListener
+            controller = mediaController
+            metadata = mediaController.mediaMetadata
+            playWhenReady = mediaController.playWhenReady
+
+            mediaController.addListener(object : Player.Listener {
+                override fun onMediaMetadataChanged(newMetadata: MediaMetadata) {
+                    metadata = newMetadata
+                }
+
+                override fun onPlayWhenReadyChanged(newPlayWhenReady: Boolean, reason: Int) {
+                    playWhenReady = newPlayWhenReady
+                }
+            })
+        }, MoreExecutors.directExecutor())
     }
 
     override fun onStop() {
         super.onStop()
-        mediaBrowser.disconnect()
+        controllerFuture?.let {
+            MediaController.releaseFuture(it)
+        }
+        controller = null
     }
 }
 
 @Composable
 fun PlayerScreen(
-    metadata: MediaMetadataCompat?,
-    playbackState: PlaybackStateCompat?,
+    metadata: MediaMetadata,
+    isPlaying: Boolean,
     onPlayPause: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit
 ) {
-    val title = metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE) ?: "夜曲"
-    val artist = metadata?.getString(MediaMetadataCompat.METADATA_KEY_ARTIST) ?: "周杰伦"
-    val isPlaying = playbackState?.state == PlaybackStateCompat.STATE_PLAYING
+    val title = metadata.title?.toString() ?: "夜曲"
+    val artist = metadata.artist?.toString() ?: "周杰伦"
 
     Box(
         modifier = Modifier
@@ -125,7 +118,7 @@ fun PlayerScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Music Player",
+                text = "Music Player (Media3)",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(top = 16.dp)

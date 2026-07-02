@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.carsetting.shared" >
 
     <uses-sdk android:minSdkVersion="34" />
@@ -11,8 +12,10 @@
 
         <service
             android:name="com.example.carsetting.shared.MyMusicService"
-            android:exported="true" >
+            android:exported="true"
+            tools:ignore="ExportedService" >
             <intent-filter>
+                <action android:name="androidx.media3.session.MediaLibraryService" />
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
