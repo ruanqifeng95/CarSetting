@@ -70,7 +70,7 @@ fun CarSettingsScreen() {
                 )
             }
 
-            PrimaryTabRow(
+            TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = MaterialTheme.colorScheme.surface
             ) {

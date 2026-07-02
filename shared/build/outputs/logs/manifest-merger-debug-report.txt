@@ -1,33 +1,34 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:1:1-22:12
-INJECTED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:1:1-22:12
+ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:1:1-20:12
+INJECTED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:1:1-20:12
 	package
+		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:2:5-44
 		INJECTED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:1:11-69
 application
-ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:3:5-20:19
+ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:4:5-18:19
 	android:appCategory
-		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:3:18-45
+		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:4:18-45
 meta-data#com.google.android.gms.car.application
-ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:5:9-7:59
+ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:6:9-8:59
 	android:resource
-		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:7:13-56
+		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:8:13-56
 	android:name
-		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:6:13-66
+		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:7:13-66
 service#com.example.carsetting.shared.MyMusicService
-ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:12:9-18:19
+ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:10:9-16:19
 	android:exported
-		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:14:13-36
+		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:12:13-36
 	android:name
-		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:13:13-72
+		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:11:13-43
 intent-filter#action:name:android.media.browse.MediaBrowserService
-ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:15:13-17:29
+ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:13:13-15:29
 action#android.media.browse.MediaBrowserService
-ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:16:17-83
+ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:14:17-83
 	android:name
-		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:16:25-80
+		ADDED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:14:25-80
 uses-sdk
 INJECTED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml

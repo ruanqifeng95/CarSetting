@@ -2,90 +2,84 @@ package com.example.carsetting.shared
 
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat.MediaItem
-import androidx.media.MediaBrowserServiceCompat
+import android.support.v4.media.MediaDescriptionCompat
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
-
+import android.support.v4.media.session.PlaybackStateCompat
+import androidx.media.MediaBrowserServiceCompat
 import java.util.ArrayList
 
-/**
- * This class provides a MediaBrowser through a service. It exposes the media library to a browsing
- * client, through the onGetRoot and onLoadChildren methods. It also creates a MediaSession and
- * exposes it through its MediaSession.Token, which allows the client to create a MediaController
- * that connects to and send control commands to the MediaSession remotely. This is useful for
- * user interfaces that need to interact with your media session, like Android Auto. You can
- * (should) also use the same service from your app's UI, which gives a seamless playback
- * experience to the user.
- *
- *
- * To implement a MediaBrowserService, you need to:
- *
- *  *  Extend [MediaBrowserServiceCompat], implementing the media browsing
- * related methods [MediaBrowserServiceCompat.onGetRoot] and
- * [MediaBrowserServiceCompat.onLoadChildren];
- *
- *  *  In onCreate, start a new [MediaSessionCompat] and notify its parent
- * with the session"s token [MediaBrowserServiceCompat.setSessionToken];
- *
- *  *  Set a callback on the [MediaSessionCompat.setCallback].
- * The callback will receive all the user"s actions, like play, pause, etc;
- *
- *  *  Handle all the actual music playing using any method your app prefers (for example,
- * [android.media.MediaPlayer])
- *
- *  *  Update playbackState, "now playing" metadata and queue, using MediaSession proper methods
- * [MediaSessionCompat.setPlaybackState]
- * [MediaSessionCompat.setMetadata] and
- * [MediaSessionCompat.setQueue])
- *
- *  *  Declare and export the service in AndroidManifest with an intent receiver for the action
- * android.media.browse.MediaBrowserService
- *
- * To make your app compatible with Android Auto, you also need to:
- *
- *  *  Declare a meta-data tag in AndroidManifest.xml linking to a xml resource
- * with a &lt;automotiveApp&gt; root element. For a media app, this must include
- * an &lt;uses name="media"/&gt; element as a child.
- * For example, in AndroidManifest.xml:
- * &lt;meta-data android:name="com.google.android.gms.car.application"
- * android:resource="@xml/automotive_app_desc"/&gt;
- * And in res/values/automotive_app_desc.xml:
- * &lt;automotiveApp&gt;
- * &lt;uses name="media"/&gt;
- * &lt;/automotiveApp&gt;
- *
- */
 class MyMusicService : MediaBrowserServiceCompat() {
 
     private lateinit var session: MediaSessionCompat
+    private var currentIndex = 0
+
+    private data class Song(val title: String, val artist: String)
+    private val playlist = listOf(
+        Song("夜曲", "周杰伦"),
+        Song("晴天", "周杰伦"),
+        Song("七里香", "周杰伦"),
+        Song("简单爱", "周杰伦"),
+        Song("稻香", "周杰伦")
+    )
 
     private val callback = object : MediaSessionCompat.Callback() {
-        override fun onPlay() {}
+        override fun onPlay() {
+            updatePlaybackState(PlaybackStateCompat.STATE_PLAYING)
+        }
 
-        override fun onSkipToQueueItem(queueId: Long) {}
+        override fun onPause() {
+            updatePlaybackState(PlaybackStateCompat.STATE_PAUSED)
+        }
 
-        override fun onSeekTo(position: Long) {}
+        override fun onStop() {
+            updatePlaybackState(PlaybackStateCompat.STATE_STOPPED)
+        }
 
-        override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {}
+        override fun onSkipToNext() {
+            currentIndex = (currentIndex + 1) % playlist.size
+            updateMetadata(playlist[currentIndex].title, playlist[currentIndex].artist)
+        }
 
-        override fun onPause() {}
-
-        override fun onStop() {}
-
-        override fun onSkipToNext() {}
-
-        override fun onSkipToPrevious() {}
-
-        override fun onCustomAction(action: String?, extras: Bundle?) {}
-
-        override fun onPlayFromSearch(query: String?, extras: Bundle?) {}
+        override fun onSkipToPrevious() {
+            currentIndex = (currentIndex - 1 + playlist.size) % playlist.size
+            updateMetadata(playlist[currentIndex].title, playlist[currentIndex].artist)
+        }
     }
 
     override fun onCreate() {
         super.onCreate()
 
         session = MediaSessionCompat(this, "MyMusicService")
-        sessionToken = session.sessionToken
         session.setCallback(callback)
+        
+        // 将 Session 的 Token 设置给 MediaBrowserService
+        sessionToken = session.sessionToken
+
+        // 初始化模拟数据
+        updateMetadata(playlist[currentIndex].title, playlist[currentIndex].artist)
+        updatePlaybackState(PlaybackStateCompat.STATE_PAUSED)
+    }
+
+    private fun updateMetadata(title: String, artist: String) {
+        val metadata = MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+            .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+            .build()
+        session.setMetadata(metadata)
+    }
+
+    private fun updatePlaybackState(state: Int) {
+        val stateBuilder = PlaybackStateCompat.Builder()
+            .setActions(
+                PlaybackStateCompat.ACTION_PLAY or
+                        PlaybackStateCompat.ACTION_PAUSE or
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+                        PlaybackStateCompat.ACTION_STOP
+            )
+            .setState(state, 0, 1.0f)
+        session.setPlaybackState(stateBuilder.build())
     }
 
     override fun onDestroy() {
@@ -101,6 +95,15 @@ class MyMusicService : MediaBrowserServiceCompat() {
     }
 
     override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaItem>>) {
-        result.sendResult(ArrayList())
+        val mediaItems = ArrayList<MediaItem>()
+        playlist.forEachIndexed { index, song ->
+            val description = MediaDescriptionCompat.Builder()
+                .setMediaId("song_$index")
+                .setTitle(song.title)
+                .setSubtitle(song.artist)
+                .build()
+            mediaItems.add(MediaItem(description, MediaItem.FLAG_PLAYABLE))
+        }
+        result.sendResult(mediaItems)
     }
 }

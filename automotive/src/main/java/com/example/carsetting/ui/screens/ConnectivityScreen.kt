@@ -18,7 +18,7 @@ import com.example.carsetting.ui.components.ToggleSettingCard
 @Composable
 fun ConnectivitySettingsTab() {
     val context = LocalContext.current
-    
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(

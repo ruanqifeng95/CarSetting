@@ -23,7 +23,9 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "CarSetting"
-include(":mobile")
-include(":automotive")
+include(":app-music")
+project(":app-music").projectDir = file("mobile")
+include(":app-settings")
+project(":app-settings").projectDir = file("automotive")
 include(":shared")
  

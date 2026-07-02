@@ -5,33 +5,28 @@
 5    <uses-sdk android:minSdkVersion="34" />
 6
 7    <application android:appCategory="audio" >
-7-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:3:5-20:19
-7-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:3:18-45
+7-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:4:5-18:19
+7-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:4:18-45
 8        <meta-data
-8-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:5:9-7:59
+8-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:6:9-8:59
 9            android:name="com.google.android.gms.car.application"
-9-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:6:13-66
+9-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:7:13-66
 10            android:resource="@xml/automotive_app_desc" />
-10-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:7:13-56
+10-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:8:13-56
 11
-12        <!--
-13         Main music service, provides media browsing and media playback services to
-14         consumers through MediaBrowserService and MediaSession. Consumers connect to it through
-15         MediaBrowser (for browsing) and MediaController (for playback control)
-16        -->
-17        <service
-17-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:12:9-18:19
-18            android:name="com.example.carsetting.shared.MyMusicService"
-18-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:13:13-72
-19            android:exported="true" >
-19-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:14:13-36
-20            <intent-filter>
-20-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:15:13-17:29
-21                <action android:name="android.media.browse.MediaBrowserService" />
-21-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:16:17-83
-21-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:16:25-80
-22            </intent-filter>
-23        </service>
-24    </application>
-25
-26</manifest>
+12        <service
+12-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:10:9-16:19
+13            android:name="com.example.carsetting.shared.MyMusicService"
+13-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:11:13-43
+14            android:exported="true" >
+14-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:12:13-36
+15            <intent-filter>
+15-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:13:13-15:29
+16                <action android:name="android.media.browse.MediaBrowserService" />
+16-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:14:17-83
+16-->C:\Users\QRUAN\AndroidStudioProjects\CarSetting\shared\src\main\AndroidManifest.xml:14:25-80
+17            </intent-filter>
+18        </service>
+19    </application>
+20
+21</manifest>
