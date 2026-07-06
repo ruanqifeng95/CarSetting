@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Cast
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -57,6 +58,16 @@ fun ConnectivitySettingsTab() {
                 description = "管理车内热点连接",
                 checked = wifiEnabled,
                 onCheckedChange = { wifiEnabled = it }
+            )
+        }
+
+        item {
+            NavigationEntryCard(
+                title = "车载音乐",
+                description = "打开内置音乐播放器",
+                icon = Icons.Default.MusicNote,
+                iconTint = Color(0xFF1DB954),
+                onClick = { /* 暂不执行跳转 */ }
             )
         }
         
