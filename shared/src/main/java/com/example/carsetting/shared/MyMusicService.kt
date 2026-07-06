@@ -41,8 +41,7 @@ class MyMusicService : MediaLibraryService() {
         )
         
         // Initialize MediaLibrarySession
-        mediaLibrarySession = MediaLibrarySession.Builder(this, player, object : MediaLibrarySession.Callback {
-            override fun onGetLibraryRoot(
+        mediaLibrarySession = MediaLibrarySession.Builder(this, player, object : MediaLibrarySession.Callback {            override fun onGetLibraryRoot(
                 session: MediaLibrarySession,
                 browser: MediaSession.ControllerInfo,
                 params: LibraryParams?

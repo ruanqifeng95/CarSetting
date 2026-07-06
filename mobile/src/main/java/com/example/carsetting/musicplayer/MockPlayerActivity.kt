@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,7 +54,8 @@ class MockPlayerActivity : ComponentActivity() {
                         }
                     },
                     onNext = { controller?.seekToNext() },
-                    onPrevious = { controller?.seekToPrevious() }
+                    onPrevious = { controller?.seekToPrevious() },
+                    onBack = { finish() }
                 )
             }
         }
@@ -96,7 +98,8 @@ fun PlayerScreen(
     isPlaying: Boolean,
     onPlayPause: () -> Unit,
     onNext: () -> Unit,
-    onPrevious: () -> Unit
+    onPrevious: () -> Unit,
+    onBack: () -> Unit
 ) {
     val title = metadata.title?.toString() ?: "夜曲"
     val artist = metadata.artist?.toString() ?: "周杰伦"
@@ -110,6 +113,19 @@ fun PlayerScreen(
                 )
             )
     ) {
+        IconButton(
+            onClick = onBack,
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.TopStart)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
