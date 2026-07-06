@@ -2,6 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.carsetting.settings">
 
+    <queries>
+        <package android:name="com.example.carsetting.musicplayer" />
+        <intent>
+            <action android:name="androidx.media3.session.MediaLibraryService" />
+        </intent>
+        <intent>
+            <action android:name="android.media.browse.MediaBrowserService" />
+        </intent>
+    </queries>
+
     <uses-feature
         android:name="android.hardware.type.automotive"
         android:required="true" />

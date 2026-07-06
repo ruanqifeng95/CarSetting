@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.androidx.car.app)
     implementation(libs.androidx.car.app.automotive)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.media3.session)
+    implementation(libs.guava)
     implementation(project(":shared"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

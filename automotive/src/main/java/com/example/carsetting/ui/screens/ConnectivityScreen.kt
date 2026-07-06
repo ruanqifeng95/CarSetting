@@ -1,5 +1,7 @@
 package com.example.carsetting.ui.screens
 
+import android.content.ComponentName
+import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -13,12 +15,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import com.example.carsetting.ui.components.NavigationEntryCard
 import com.example.carsetting.ui.components.ToggleSettingCard
+import com.google.common.util.concurrent.MoreExecutors
 
 @Composable
 fun ConnectivitySettingsTab() {
     val context = LocalContext.current
+    var controller by remember { mutableStateOf<MediaController?>(null) }
+
+    DisposableEffect(Unit) {
+        val componentName = ComponentName("com.example.carsetting.musicplayer", "com.example.carsetting.shared.MyMusicService")
+        val controllerFuture = try {
+            val sessionToken = SessionToken(context, componentName)
+            MediaController.Builder(context, sessionToken).buildAsync()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+
+        controllerFuture?.addListener({
+            try {
+                controller = controllerFuture.get()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }, MoreExecutors.directExecutor())
+
+        onDispose {
+            controllerFuture?.let { MediaController.releaseFuture(it) }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +96,23 @@ fun ConnectivitySettingsTab() {
                 description = "打开内置音乐播放器",
                 icon = Icons.Default.MusicNote,
                 iconTint = Color(0xFF1DB954),
-                onClick = { /* 暂不执行跳转 */ }
+                onClick = {
+                    // Android 14+ 要求显式允许 PendingIntent 后台启动 Activity
+                    val options = android.app.ActivityOptions.makeBasic()
+                    if (Build.VERSION.SDK_INT >= 36) {
+                        options.pendingIntentBackgroundActivityStartMode = android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_ALWAYS
+                    }
+                    else {
+                        @Suppress("DEPRECATION")
+                        options.pendingIntentBackgroundActivityStartMode = android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED
+                    }
+
+                    try {
+                        controller?.sessionActivity?.send(context, 0, null, null, null, null, options.toBundle())
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             )
         }
         

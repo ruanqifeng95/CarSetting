@@ -1,5 +1,8 @@
 package com.example.carsetting.shared
 
+import android.app.PendingIntent
+import android.content.ComponentName
+import android.content.Intent
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -28,6 +31,14 @@ class MyMusicService : MediaLibraryService() {
     override fun onCreate() {
         super.onCreate()
         player = ExoPlayer.Builder(this).build()
+
+        val intent = Intent().apply {
+            component = ComponentName("com.example.carsetting.musicplayer", "com.example.carsetting.musicplayer.MockPlayerActivity")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
         
         // Initialize MediaLibrarySession
         mediaLibrarySession = MediaLibrarySession.Builder(this, player, object : MediaLibrarySession.Callback {
@@ -66,13 +77,15 @@ class MyMusicService : MediaLibraryService() {
                 }
                 return Futures.immediateFuture(LibraryResult.ofItemList(ImmutableList.copyOf(mediaItems), params))
             }
-        }).build()
+        })
+            .setSessionActivity(pendingIntent)
+            .build()
 
         // Set mock data to player
         val mediaItems = playlist.map { song ->
             MediaItem.Builder()
                 .setMediaId(song.title)
-                .setUri("http://example.com/${song.title}.mp3") // Set a dummy URI to avoid NPE in ExoPlayer
+                .setUri("https://storage.googleapis.com/exoplayer-test-media-0/play.mp3") // Use a valid HTTPS sample URI
                 .setMediaMetadata(
                     MediaMetadata.Builder()
                         .setTitle(song.title)
