@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.carsetting.ui.components.NavigationEntryCard
@@ -25,6 +27,7 @@ import com.google.common.util.concurrent.MoreExecutors
 fun ConnectivitySettingsTab() {
     val context = LocalContext.current
     var controller by remember { mutableStateOf<MediaController?>(null) }
+    var currentMusicInfo by remember { mutableStateOf("打开内置音乐播放器") }
 
     DisposableEffect(Unit) {
         val componentName = ComponentName("com.example.carsetting.musicplayer", "com.example.carsetting.shared.MyMusicService")
@@ -38,7 +41,24 @@ fun ConnectivitySettingsTab() {
 
         controllerFuture?.addListener({
             try {
-                controller = controllerFuture.get()
+                val mediaController = controllerFuture.get()
+                controller = mediaController
+                
+                // 设置初始显示
+                val metadata = mediaController.mediaMetadata
+                if (metadata.title != null) {
+                    currentMusicInfo = "${metadata.title} - ${metadata.artist ?: "未知艺术家"}"
+                }
+
+                mediaController.addListener(object : Player.Listener {
+                    override fun onMediaMetadataChanged(metadata: MediaMetadata) {
+                        if (metadata.title != null) {
+                            currentMusicInfo = "${metadata.title} - ${metadata.artist ?: "未知艺术家"}"
+                        } else {
+                            currentMusicInfo = "未在播放"
+                        }
+                    }
+                })
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -93,7 +113,7 @@ fun ConnectivitySettingsTab() {
         item {
             NavigationEntryCard(
                 title = "车载音乐",
-                description = "打开内置音乐播放器",
+                description = currentMusicInfo,
                 icon = Icons.Default.MusicNote,
                 iconTint = Color(0xFF1DB954),
                 onClick = {
