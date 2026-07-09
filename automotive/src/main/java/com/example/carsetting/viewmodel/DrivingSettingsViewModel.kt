@@ -6,7 +6,7 @@ import com.example.carsetting.model.DrivingIntent
 import com.example.carsetting.model.DrivingMode
 import com.example.carsetting.model.DrivingSettingsState
 import com.example.carsetting.repository.DrivingSettingsRepository
-import com.example.carsetting.repository.FakeDrivingSettingsRepository
+import com.example.carsetting.repository.DrivingSettingsRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DrivingSettingsViewModel(
-    private val repository: DrivingSettingsRepository = FakeDrivingSettingsRepository()
+    private val repository: DrivingSettingsRepository = DrivingSettingsRepositoryImpl()
 ) : ViewModel() {
     
     private val _state = MutableStateFlow(DrivingSettingsState())
