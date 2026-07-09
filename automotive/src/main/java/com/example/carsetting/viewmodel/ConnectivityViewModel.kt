@@ -46,6 +46,7 @@ class ConnectivityViewModel(
             ConnectivityIntent.LoadSettings -> loadSettings()
             ConnectivityIntent.OpenBluetoothSettings -> manager?.openBluetoothSettings()
             ConnectivityIntent.OpenMusicPlayer -> manager?.openMusicPlayer()
+            ConnectivityIntent.OpenProjectionSettings -> manager?.openProjectionSettings()
         }
     }
 
@@ -90,7 +91,7 @@ class ConnectivityViewModel(
             ): T {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 return ConnectivityViewModel(
-                    repository = ConnectivityRepositoryImpl(), // 以后可以替换为真实的 Repository
+                    repository = ConnectivityRepositoryImpl(),
                     manager = ConnectivityManagerImpl(application.applicationContext)
                 ) as T
             }

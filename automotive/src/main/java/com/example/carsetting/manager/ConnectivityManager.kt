@@ -6,5 +6,6 @@ interface ConnectivityManager {
     val musicInfo: StateFlow<String>
     fun openBluetoothSettings()
     fun openMusicPlayer()
+    fun openProjectionSettings()
     fun release()
 }

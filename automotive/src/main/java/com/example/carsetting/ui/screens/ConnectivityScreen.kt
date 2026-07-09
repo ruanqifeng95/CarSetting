@@ -71,7 +71,7 @@ fun ConnectivitySettingsTab(
                 description = "无线连接手机投屏",
                 icon = Icons.Default.Cast,
                 iconTint = MaterialTheme.colorScheme.primary,
-                onClick = { viewModel.handleIntent(ConnectivityIntent.OpenBluetoothSettings) }
+                onClick = { viewModel.handleIntent(ConnectivityIntent.OpenProjectionSettings) }
             )
         }
     }

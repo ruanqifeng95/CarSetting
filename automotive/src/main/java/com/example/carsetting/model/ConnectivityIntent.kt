@@ -6,4 +6,5 @@ sealed class ConnectivityIntent {
     object LoadSettings : ConnectivityIntent()
     object OpenBluetoothSettings : ConnectivityIntent()
     object OpenMusicPlayer : ConnectivityIntent()
+    object OpenProjectionSettings : ConnectivityIntent()
 }
