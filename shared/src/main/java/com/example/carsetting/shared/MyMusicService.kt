@@ -21,11 +21,11 @@ class MyMusicService : MediaLibraryService() {
 
     private data class Song(val title: String, val artist: String)
     private val playlist = listOf(
-        Song("夜曲", "周杰伦"),
-        Song("晴天", "周杰伦"),
-        Song("七里香", "周杰伦"),
-        Song("简单爱", "周杰伦"),
-        Song("稻香", "周杰伦")
+        Song("Nocturne", "Jay Chou"),
+        Song("Sunny Day", "Jay Chou"),
+        Song("Common Jasmine Orange", "Jay Chou"),
+        Song("Simple Love", "Jay Chou"),
+        Song("Fragrance of Rice", "Jay Chou")
     )
 
     override fun onCreate() {

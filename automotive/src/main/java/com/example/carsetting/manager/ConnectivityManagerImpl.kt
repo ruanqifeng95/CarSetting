@@ -10,6 +10,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.example.carsetting.settings.R
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class ConnectivityManagerImpl(private val context: Context) : ConnectivityManager {
 
-    private val _musicInfo = MutableStateFlow("打开内置音乐播放器")
+    private val _musicInfo = MutableStateFlow(context.getString(R.string.music_open_player))
     override val musicInfo: StateFlow<String> = _musicInfo.asStateFlow()
 
     private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -58,9 +59,9 @@ class ConnectivityManagerImpl(private val context: Context) : ConnectivityManage
 
     private fun updateMusicInfoFromMetadata(metadata: MediaMetadata?) {
         val info = if (metadata?.title != null) {
-            "${metadata.title} - ${metadata.artist ?: "未知艺术家"}"
+            "${metadata.title} - ${metadata.artist ?: context.getString(R.string.music_unknown_artist)}"
         } else {
-            "未在播放"
+            context.getString(R.string.music_not_playing)
         }
         _musicInfo.value = info
     }

@@ -63,6 +63,9 @@
     <string name="wifi_title">In-car Wi-Fi</string>
     <string name="wifi_desc">Manage in-car hotspot</string>
     <string name="music_title">Car Music</string>
+    <string name="music_open_player">Open built-in music player</string>
+    <string name="music_unknown_artist">Unknown Artist</string>
+    <string name="music_not_playing">Not Playing</string>
     <string name="projection_title">Phone Projection</string>
     <string name="projection_desc">Wireless connection for phone projection</string>
 

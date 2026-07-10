@@ -1,0 +1,5 @@
+<resources>
+    <string name="m_open_player">打开内置音乐播放器</string>
+    <string name="m_unknown_artist">未知艺术家</string>
+    <string name="m_not_playing">未在播放</string>
+</resources>

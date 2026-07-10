@@ -1,0 +1,5 @@
+<resources>
+    <string name="m_open_player">Open built-in music player</string>
+    <string name="m_unknown_artist">Unknown Artist</string>
+    <string name="m_not_playing">Not Playing</string>
+</resources>

@@ -101,8 +101,8 @@ fun PlayerScreen(
     onPrevious: () -> Unit,
     onBack: () -> Unit
 ) {
-    val title = metadata.title?.toString() ?: "夜曲"
-    val artist = metadata.artist?.toString() ?: "周杰伦"
+    val title = metadata.title?.toString() ?: "Nocturne"
+    val artist = metadata.artist?.toString() ?: "Jay Chou"
 
     Box(
         modifier = Modifier
