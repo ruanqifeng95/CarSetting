@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.example.carsetting.settings.R
 import com.example.carsetting.ui.components.ToggleSettingCard
 
 @Composable
@@ -27,9 +29,9 @@ fun SafetySettingsTab() {
         item {
             var bsd by remember { mutableStateOf(true) }
             ToggleSettingCard(
-                title = "盲点监测",
+                title = stringResource(R.string.bsd_title),
                 icon = Icons.Default.Visibility,
-                description = "监测盲区车辆",
+                description = stringResource(R.string.bsd_desc),
                 checked = bsd,
                 onCheckedChange = { bsd = it }
             )
@@ -38,9 +40,9 @@ fun SafetySettingsTab() {
         item {
             var lka by remember { mutableStateOf(true) }
             ToggleSettingCard(
-                title = "车道保持辅助",
+                title = stringResource(R.string.lka_title),
                 icon = Icons.Default.Straighten,
-                description = "帮助保持在车道内",
+                description = stringResource(R.string.lka_desc),
                 checked = lka,
                 onCheckedChange = { lka = it }
             )
@@ -49,9 +51,9 @@ fun SafetySettingsTab() {
         item {
             var fcw by remember { mutableStateOf(true) }
             ToggleSettingCard(
-                title = "碰撞预警",
+                title = stringResource(R.string.fcw_title),
                 icon = Icons.Default.Warning,
-                description = "前方碰撞警告",
+                description = stringResource(R.string.fcw_desc),
                 checked = fcw,
                 onCheckedChange = { fcw = it }
             )
@@ -60,9 +62,9 @@ fun SafetySettingsTab() {
         item {
             var aeb by remember { mutableStateOf(true) }
             ToggleSettingCard(
-                title = "自动紧急制动",
+                title = stringResource(R.string.aeb_title),
                 icon = Icons.Default.CarCrash,
-                description = "检测到危险时自动刹车",
+                description = stringResource(R.string.aeb_desc),
                 checked = aeb,
                 onCheckedChange = { aeb = it }
             )

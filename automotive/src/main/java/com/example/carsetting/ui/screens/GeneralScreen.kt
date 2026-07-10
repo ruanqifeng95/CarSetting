@@ -10,11 +10,18 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.carsetting.settings.R
 import com.example.carsetting.ui.components.SettingCard
 import com.example.carsetting.ui.components.NavigationEntryCard
+import com.example.carsetting.util.LocaleManager
+import java.util.Locale
 
 @Composable
 fun GeneralSettingsTab() {
+    val context = LocalContext.current
+    
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
@@ -26,31 +33,45 @@ fun GeneralSettingsTab() {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            var language by remember { mutableStateOf("简体中文") }
+            val currentLang = if (LocaleManager.currentLocale.language == "en") {
+                stringResource(R.string.lang_en)
+            } else {
+                stringResource(R.string.lang_zh)
+            }
+            
             SettingCard(
-                title = "语言",
+                title = stringResource(R.string.language_title),
                 icon = Icons.Default.Language,
-                options = listOf("简体中文", "English"),
-                selectedOption = language,
-                onOptionSelected = { language = it }
+                options = listOf(stringResource(R.string.lang_zh), stringResource(R.string.lang_en)),
+                selectedOption = currentLang,
+                onOptionSelected = { selected ->
+                    val newLocale = if (selected == context.getString(R.string.lang_en)) {
+                        Locale.ENGLISH
+                    } else {
+                        Locale.SIMPLIFIED_CHINESE
+                    }
+                    LocaleManager.setLocale(newLocale)
+                }
             )
         }
 
         item {
             var unit by remember { mutableStateOf("公制") }
+            val unitOptions = listOf(stringResource(R.string.unit_metric), stringResource(R.string.unit_imperial))
+            
             SettingCard(
-                title = "单位",
+                title = stringResource(R.string.unit_title),
                 icon = Icons.Default.Straighten,
-                options = listOf("公制", "英制"),
-                selectedOption = unit,
-                onOptionSelected = { unit = it }
+                options = unitOptions,
+                selectedOption = if (unit == "公制") unitOptions[0] else unitOptions[1],
+                onOptionSelected = { unit = if (it == unitOptions[0]) "公制" else "英制" }
             )
         }
 
         item {
             NavigationEntryCard(
-                title = "系统信息",
-                description = "版本号: 1.0.0 (Build 20250707)",
+                title = stringResource(R.string.sys_info),
+                description = stringResource(R.string.version_label),
                 icon = Icons.Default.Info,
                 onClick = { /* Handle about click */ }
             )
@@ -58,8 +79,8 @@ fun GeneralSettingsTab() {
         
         item {
             NavigationEntryCard(
-                title = "恢复出厂设置",
-                description = "清除所有用户数据并重置设置",
+                title = stringResource(R.string.factory_reset),
+                description = stringResource(R.string.reset_desc),
                 icon = Icons.Default.Settings,
                 onClick = { /* Handle reset click */ }
             )

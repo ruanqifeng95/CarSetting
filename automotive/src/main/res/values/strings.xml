@@ -1,3 +1,80 @@
 <resources>
     <string name="app_name">Car Setting</string>
+    <string name="title_main">Car Settings</string>
+
+    <!-- Tabs -->
+    <string name="tab_driving">Driving</string>
+    <string name="tab_comfort">Comfort</string>
+    <string name="tab_safety">Safety</string>
+    <string name="tab_connectivity">Connectivity</string>
+    <string name="tab_general">General</string>
+
+    <!-- Driving Screen -->
+    <string name="driving_mode">Driving Mode</string>
+    <string name="driving_mode_eco">Eco</string>
+    <string name="driving_mode_standard">Standard</string>
+    <string name="driving_mode_sport">Sport</string>
+    <string name="driving_mode_offroad">Off-road</string>
+    <string name="battery_preservation">Battery Preservation</string>
+    <string name="battery_preservation_desc">Set the battery preservation strategy for hybrid system</string>
+    <string name="auto_start_stop">Auto Start-Stop</string>
+    <string name="auto_start_stop_desc">Automatically turn off the engine when stopped</string>
+    <string name="energy_recovery">Energy Recovery</string>
+    <string name="energy_recovery_desc">Recover energy during deceleration</string>
+    <string name="steering_effort">Steering Effort</string>
+    <string name="steering_light">Light</string>
+    <string name="steering_standard">Standard</string>
+    <string name="steering_sport">Sport</string>
+
+    <!-- Battery Preservation Screen -->
+    <string name="bp_mode">Preservation Mode</string>
+    <string name="bp_smart">Smart</string>
+    <string name="bp_forced">Forced</string>
+    <string name="bp_target_soc">Target SOC</string>
+    <string name="bp_desc_forced">In forced mode, the system will try to maintain charge near the set value</string>
+    <string name="bp_desc_smart">In smart mode, the system manages charge automatically</string>
+    <string name="back">Back</string>
+
+    <!-- Comfort Screen -->
+    <string name="ac_auto">Auto AC Mode</string>
+    <string name="ac_auto_desc">Automatically adjust temperature and airflow</string>
+    <string name="seat_temp">Seat Temperature</string>
+    <string name="seat_off">Off</string>
+    <string name="seat_low">Low</string>
+    <string name="seat_mid">Mid</string>
+    <string name="seat_high">High</string>
+    <string name="ambient_light">Ambient Light</string>
+    <string name="ambient_light_desc">In-car ambient lighting</string>
+    <string name="volume_settings">Volume Settings</string>
+
+    <!-- Safety Screen -->
+    <string name="bsd_title">Blind Spot Detection</string>
+    <string name="bsd_desc">Monitor blind spots for vehicles</string>
+    <string name="lka_title">Lane Keeping Assist</string>
+    <string name="lka_desc">Help keep the vehicle within the lane</string>
+    <string name="fcw_title">Forward Collision Warning</string>
+    <string name="fcw_desc">Warning of potential forward collision</string>
+    <string name="aeb_title">Auto Emergency Braking</string>
+    <string name="aeb_desc">Brake automatically when danger is detected</string>
+
+    <!-- Connectivity Screen -->
+    <string name="bt_audio">Bluetooth Audio</string>
+    <string name="bt_audio_desc">Connect phone via Bluetooth for music</string>
+    <string name="wifi_title">In-car Wi-Fi</string>
+    <string name="wifi_desc">Manage in-car hotspot</string>
+    <string name="music_title">Car Music</string>
+    <string name="projection_title">Phone Projection</string>
+    <string name="projection_desc">Wireless connection for phone projection</string>
+
+    <!-- General Screen -->
+    <string name="language_title">Language</string>
+    <string name="lang_zh">简体中文</string>
+    <string name="lang_en">English</string>
+    <string name="unit_title">Unit</string>
+    <string name="unit_metric">Metric</string>
+    <string name="unit_imperial">Imperial</string>
+    <string name="sys_info">System Info</string>
+    <string name="version_label">Version: 1.0.0 (Build 20250707)</string>
+    <string name="factory_reset">Factory Reset</string>
+    <string name="reset_desc">Clear all user data and reset settings</string>
 </resources>

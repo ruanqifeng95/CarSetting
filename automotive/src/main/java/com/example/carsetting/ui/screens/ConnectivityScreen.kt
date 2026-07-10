@@ -12,8 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.carsetting.settings.R
 import com.example.carsetting.model.ConnectivityIntent
 import com.example.carsetting.ui.components.NavigationEntryCard
 import com.example.carsetting.ui.components.ToggleSettingCard
@@ -37,8 +39,8 @@ fun ConnectivitySettingsTab(
     ) {
         item {
             NavigationEntryCard(
-                title = "蓝牙音频",
-                description = "连接手机蓝牙播放音乐",
+                title = stringResource(R.string.bt_audio),
+                description = stringResource(R.string.bt_audio_desc),
                 icon = Icons.Default.Bluetooth,
                 iconTint = Color(0xFF2196F3),
                 onClick = { viewModel.handleIntent(ConnectivityIntent.OpenBluetoothSettings) }
@@ -47,9 +49,9 @@ fun ConnectivitySettingsTab(
         
         item {
             ToggleSettingCard(
-                title = "车载 Wi-Fi",
+                title = stringResource(R.string.wifi_title),
                 icon = Icons.Default.Wifi,
-                description = "管理车内热点连接",
+                description = stringResource(R.string.wifi_desc),
                 checked = state.wifiEnabled,
                 onCheckedChange = { viewModel.handleIntent(ConnectivityIntent.ToggleWifi(it)) }
             )
@@ -57,7 +59,7 @@ fun ConnectivitySettingsTab(
 
         item {
             NavigationEntryCard(
-                title = "车载音乐",
+                title = stringResource(R.string.music_title),
                 description = state.currentMusicInfo,
                 icon = Icons.Default.MusicNote,
                 iconTint = Color(0xFF1DB954),
@@ -67,8 +69,8 @@ fun ConnectivitySettingsTab(
         
         item {
             NavigationEntryCard(
-                title = "手机投屏",
-                description = "无线连接手机投屏",
+                title = stringResource(R.string.projection_title),
+                description = stringResource(R.string.projection_desc),
                 icon = Icons.Default.Cast,
                 iconTint = MaterialTheme.colorScheme.primary,
                 onClick = { viewModel.handleIntent(ConnectivityIntent.OpenProjectionSettings) }

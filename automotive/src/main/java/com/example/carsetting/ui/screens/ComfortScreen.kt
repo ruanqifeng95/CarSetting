@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.example.carsetting.settings.R
 import com.example.carsetting.ui.components.SettingCard
 import com.example.carsetting.ui.components.SliderSettingCard
 import com.example.carsetting.ui.components.ToggleSettingCard
@@ -29,9 +31,9 @@ fun ComfortSettingsTab() {
         item {
             var autoAc by remember { mutableStateOf(true) }
             ToggleSettingCard(
-                title = "空调自动模式",
+                title = stringResource(R.string.ac_auto),
                 icon = Icons.Default.AcUnit,
-                description = "自动调节温度和风量",
+                description = stringResource(R.string.ac_auto_desc),
                 checked = autoAc,
                 onCheckedChange = { autoAc = it }
             )
@@ -39,9 +41,14 @@ fun ComfortSettingsTab() {
         
         item {
             var seatTemp by remember { mutableFloatStateOf(0f) }
-            val labels = listOf("关闭", "低", "中", "高")
+            val labels = listOf(
+                stringResource(R.string.seat_off),
+                stringResource(R.string.seat_low),
+                stringResource(R.string.seat_mid),
+                stringResource(R.string.seat_high)
+            )
             SliderSettingCard(
-                title = "座椅温度",
+                title = stringResource(R.string.seat_temp),
                 icon = Icons.Default.Whatshot,
                 value = seatTemp,
                 onValueChange = { seatTemp = it },
@@ -54,22 +61,37 @@ fun ComfortSettingsTab() {
         item {
             var ambientLight by remember { mutableStateOf(true) }
             ToggleSettingCard(
-                title = "氛围灯",
+                title = stringResource(R.string.ambient_light),
                 icon = Icons.Default.Lightbulb,
-                description = "车内氛围照明",
+                description = stringResource(R.string.ambient_light_desc),
                 checked = ambientLight,
                 onCheckedChange = { ambientLight = it }
             )
         }
         
         item {
-            var volume by remember { mutableStateOf("中") }
+            var volumeLevel by remember { mutableStateOf("Mid") }
+            val options = listOf(
+                stringResource(R.string.seat_low),
+                stringResource(R.string.seat_mid),
+                stringResource(R.string.seat_high)
+            )
             SettingCard(
-                title = "音量设置",
+                title = stringResource(R.string.volume_settings),
                 icon = Icons.AutoMirrored.Filled.VolumeUp,
-                options = listOf("低", "中", "高"),
-                selectedOption = volume,
-                onOptionSelected = { volume = it }
+                options = options,
+                selectedOption = when(volumeLevel) {
+                    "Low" -> options[0]
+                    "Mid" -> options[1]
+                    else -> options[2]
+                },
+                onOptionSelected = { 
+                    volumeLevel = when(it) {
+                        options[0] -> "Low"
+                        options[1] -> "Mid"
+                        else -> "High"
+                    }
+                }
             )
         }
     }

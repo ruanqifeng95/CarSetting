@@ -19,17 +19,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.*
+import com.example.carsetting.settings.R
+import com.example.carsetting.util.LocaleAwareContent
+import com.example.carsetting.util.LocaleManager
 import com.example.carsetting.navigation.CarNavGraph
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Initialize LocaleManager with current system locale
+        LocaleManager.init(resources.configuration.locales[0])
+
         enableEdgeToEdge()
         setContent {
-            CarSettingsTheme {
-                CarSettingsScreen()
+            LocaleAwareContent {
+                CarSettingsTheme {
+                    CarSettingsScreen()
+                }
             }
         }
     }
@@ -63,7 +73,7 @@ fun CarSettingsScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "车辆设置",
+                    text = stringResource(R.string.title_main),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -85,7 +95,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("驾驶") },
+                    text = { Text(stringResource(R.string.tab_driving)) },
                     icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null) }
                 )
                 Tab(
@@ -99,7 +109,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("舒适") },
+                    text = { Text(stringResource(R.string.tab_comfort)) },
                     icon = { Icon(Icons.Default.Air, contentDescription = null) }
                 )
                 Tab(
@@ -113,7 +123,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("安全") },
+                    text = { Text(stringResource(R.string.tab_safety)) },
                     icon = { Icon(Icons.Default.Security, contentDescription = null) }
                 )
                 Tab(
@@ -127,7 +137,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("互联") },
+                    text = { Text(stringResource(R.string.tab_connectivity)) },
                     icon = { Icon(Icons.Default.Link, contentDescription = null) }
                 )
                 Tab(
@@ -141,7 +151,7 @@ fun CarSettingsScreen() {
                             )
                         }
                     },
-                    text = { Text("通用") },
+                    text = { Text(stringResource(R.string.tab_general)) },
                     icon = { Icon(Icons.Default.Settings, contentDescription = null) }
                 )
             }

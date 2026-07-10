@@ -1,0 +1,80 @@
+<resources>
+    <string name="app_name">车辆设置</string>
+    <string name="title_main">车辆设置</string>
+
+    <!-- Tabs -->
+    <string name="tab_driving">驾驶</string>
+    <string name="tab_comfort">舒适</string>
+    <string name="tab_safety">安全</string>
+    <string name="tab_connectivity">互联</string>
+    <string name="tab_general">通用</string>
+
+    <!-- Driving Screen -->
+    <string name="driving_mode">驾驶模式</string>
+    <string name="driving_mode_eco">经济</string>
+    <string name="driving_mode_standard">标准</string>
+    <string name="driving_mode_sport">运动</string>
+    <string name="driving_mode_offroad">越野</string>
+    <string name="battery_preservation">行车保电</string>
+    <string name="battery_preservation_desc">设置混合动力系统的保电策略</string>
+    <string name="auto_start_stop">自动启停</string>
+    <string name="auto_start_stop_desc">在停车时自动关闭发动机</string>
+    <string name="energy_recovery">能量回收</string>
+    <string name="energy_recovery_desc">减速时回收能量</string>
+    <string name="steering_effort">转向力度</string>
+    <string name="steering_light">轻便</string>
+    <string name="steering_standard">标准</string>
+    <string name="steering_sport">运动</string>
+
+    <!-- Battery Preservation Screen -->
+    <string name="bp_mode">保电模式</string>
+    <string name="bp_smart">智能保电</string>
+    <string name="bp_forced">强制保电</string>
+    <string name="bp_target_soc">目标电量</string>
+    <string name="bp_desc_forced">强制保电下，系统将尽量维持电量在设定值附近</string>
+    <string name="bp_desc_smart">智能保电下，系统将自动管理电量，无需手动设置</string>
+    <string name="back">返回</string>
+
+    <!-- Comfort Screen -->
+    <string name="ac_auto">空调自动模式</string>
+    <string name="ac_auto_desc">自动调节温度和风量</string>
+    <string name="seat_temp">座椅温度</string>
+    <string name="seat_off">关闭</string>
+    <string name="seat_low">低</string>
+    <string name="seat_mid">中</string>
+    <string name="seat_high">高</string>
+    <string name="ambient_light">氛围灯</string>
+    <string name="ambient_light_desc">车内氛围照明</string>
+    <string name="volume_settings">音量设置</string>
+
+    <!-- Safety Screen -->
+    <string name="bsd_title">盲点监测</string>
+    <string name="bsd_desc">监测盲区车辆</string>
+    <string name="lka_title">车道保持辅助</string>
+    <string name="lka_desc">帮助保持在车道内</string>
+    <string name="fcw_title">碰撞预警</string>
+    <string name="fcw_desc">前方碰撞警告</string>
+    <string name="aeb_title">自动紧急制动</string>
+    <string name="aeb_desc">检测到危险时自动刹车</string>
+
+    <!-- Connectivity Screen -->
+    <string name="bt_audio">蓝牙音频</string>
+    <string name="bt_audio_desc">连接手机蓝牙播放音乐</string>
+    <string name="wifi_title">车载 Wi-Fi</string>
+    <string name="wifi_desc">管理车内热点连接</string>
+    <string name="music_title">车载音乐</string>
+    <string name="projection_title">手机投屏</string>
+    <string name="projection_desc">无线连接手机投屏</string>
+
+    <!-- General Screen -->
+    <string name="language_title">语言</string>
+    <string name="lang_zh">简体中文</string>
+    <string name="lang_en">English</string>
+    <string name="unit_title">单位</string>
+    <string name="unit_metric">公制</string>
+    <string name="unit_imperial">英制</string>
+    <string name="sys_info">系统信息</string>
+    <string name="version_label">版本号: 1.0.0 (Build 20250707)</string>
+    <string name="factory_reset">恢复出厂设置</string>
+    <string name="reset_desc">清除所有用户数据并重置设置</string>
+</resources>

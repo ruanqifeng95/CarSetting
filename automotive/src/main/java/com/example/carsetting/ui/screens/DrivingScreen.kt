@@ -21,6 +21,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.carsetting.settings.R
 
 @Composable
 fun DrivingSettingsTab(
@@ -40,17 +42,30 @@ fun DrivingSettingsTab(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
+            val options = listOf(
+                stringResource(R.string.driving_mode_eco),
+                stringResource(R.string.driving_mode_standard),
+                stringResource(R.string.driving_mode_sport),
+                stringResource(R.string.driving_mode_offroad)
+            )
+            val selectedOption = when (state.drivingMode) {
+                DrivingMode.Eco -> options[0]
+                DrivingMode.Standard -> options[1]
+                DrivingMode.Sport -> options[2]
+                DrivingMode.OffRoad -> options[3]
+            }
+
             SettingCard(
-                title = "驾驶模式",
+                title = stringResource(R.string.driving_mode),
                 icon = Icons.Default.Speed,
-                options = listOf("经济", "标准", "运动", "越野"),
-                selectedOption = state.drivingMode.displayName,
+                options = options,
+                selectedOption = selectedOption,
                 onOptionSelected = { displayName ->
                     val mode = when (displayName) {
-                        "经济" -> DrivingMode.Eco
-                        "标准" -> DrivingMode.Standard
-                        "运动" -> DrivingMode.Sport
-                        "越野" -> DrivingMode.OffRoad
+                        options[0] -> DrivingMode.Eco
+                        options[1] -> DrivingMode.Standard
+                        options[2] -> DrivingMode.Sport
+                        options[3] -> DrivingMode.OffRoad
                         else -> DrivingMode.Standard
                     }
                     viewModel.handleIntent(DrivingIntent.ChangeDrivingMode(mode))
@@ -60,8 +75,8 @@ fun DrivingSettingsTab(
 
         item {
             NavigationEntryCard(
-                title = "行车保电",
-                description = "设置混合动力系统的保电策略",
+                title = stringResource(R.string.battery_preservation),
+                description = stringResource(R.string.battery_preservation_desc),
                 icon = Icons.Default.BatteryChargingFull,
                 onClick = onNavigateToBatteryPreservation
             )
@@ -69,8 +84,8 @@ fun DrivingSettingsTab(
         
         item {
             ToggleSettingCard(
-                title = "自动启停",
-                description = "在停车时自动关闭发动机",
+                title = stringResource(R.string.auto_start_stop),
+                description = stringResource(R.string.auto_start_stop_desc),
                 icon = Icons.Default.PlayCircle,
                 checked = state.autoStartStop,
                 onCheckedChange = { viewModel.handleIntent(DrivingIntent.ToggleAutoStartStop(it)) }
@@ -79,8 +94,8 @@ fun DrivingSettingsTab(
         
         item {
             ToggleSettingCard(
-                title = "能量回收",
-                description = "减速时回收能量",
+                title = stringResource(R.string.energy_recovery),
+                description = stringResource(R.string.energy_recovery_desc),
                 icon = Icons.Default.BatteryChargingFull,
                 checked = state.energyRecovery,
                 onCheckedChange = { viewModel.handleIntent(DrivingIntent.ToggleEnergyRecovery(it)) }
@@ -88,9 +103,13 @@ fun DrivingSettingsTab(
         }
         
         item {
-            val steeringLabels = listOf("轻便", "标准", "运动")
+            val steeringLabels = listOf(
+                stringResource(R.string.steering_light),
+                stringResource(R.string.steering_standard),
+                stringResource(R.string.steering_sport)
+            )
             SliderSettingCard(
-                title = "转向力度",
+                title = stringResource(R.string.steering_effort),
                 icon = Icons.AutoMirrored.Filled.RotateRight,
                 value = state.steeringEffort.toFloat(),
                 onValueChange = { viewModel.handleIntent(DrivingIntent.ChangeSteeringEffort(it.toInt())) },
@@ -104,9 +123,13 @@ fun DrivingSettingsTab(
 
 @Composable
 fun BatteryPreservationScreen(onBack: () -> Unit) {
-    var preservationMode by remember { mutableStateOf("智能保电") }
+    var preservationMode by remember { mutableStateOf("Smart") } // Internal state, will be mapped to resources
     var targetSoc by remember { mutableFloatStateOf(50f) }
-    val isSocEnabled = preservationMode == "强制保电"
+    
+    val bpSmart = stringResource(R.string.bp_smart)
+    val bpForced = stringResource(R.string.bp_forced)
+    
+    val isSocEnabled = preservationMode == "Forced"
 
     Column(
         modifier = Modifier
@@ -118,33 +141,33 @@ fun BatteryPreservationScreen(onBack: () -> Unit) {
             modifier = Modifier.padding(bottom = 24.dp)
         ) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
             }
             Text(
-                text = "行车保电",
+                text = stringResource(R.string.battery_preservation),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
         }
 
         SettingCard(
-            title = "保电模式",
-            options = listOf("智能保电", "强制保电"),
-            selectedOption = preservationMode,
-            onOptionSelected = { preservationMode = it }
+            title = stringResource(R.string.bp_mode),
+            options = listOf(bpSmart, bpForced),
+            selectedOption = if (preservationMode == "Smart") bpSmart else bpForced,
+            onOptionSelected = { if (it == bpSmart) preservationMode = "Smart" else preservationMode = "Forced" }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         SliderSettingCard(
-            title = "目标电量",
+            title = stringResource(R.string.bp_target_soc),
             value = targetSoc,
             onValueChange = { targetSoc = it },
             valueRange = 20f..80f,
             steps = 5,
             label = "${targetSoc.toInt()}%",
             enabled = isSocEnabled,
-            description = if (isSocEnabled) "强制保电下，系统将尽量维持电量在设定值附近" else "智能保电下，系统将自动管理电量，无需手动设置"
+            description = if (isSocEnabled) stringResource(R.string.bp_desc_forced) else stringResource(R.string.bp_desc_smart)
         )
     }
 }
