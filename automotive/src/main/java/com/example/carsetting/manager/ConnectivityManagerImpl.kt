@@ -70,7 +70,7 @@ class ConnectivityManagerImpl(private val context: Context) : ConnectivityManage
         val ACTION_MEDIA_TEMPLATE = "android.car.intent.action.MEDIA_TEMPLATE"
         val EXTRA_MEDIA_COMPONENT = "android.car.intent.extra.MEDIA_COMPONENT"
         
-        // Android Automotive 标准蓝牙音频服务组件名
+        // Standard Bluetooth Audio service component name for Android Automotive
         val bluetoothComponent = "com.android.bluetooth/com.android.bluetooth.avrcpcontroller.BluetoothMediaBrowserService"
 
         val intent = Intent(ACTION_MEDIA_TEMPLATE).apply {
@@ -83,7 +83,7 @@ class ConnectivityManagerImpl(private val context: Context) : ConnectivityManage
             context.startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()
-            // 如果跳转特定媒体源失败，回退到系统蓝牙设置界面
+            // Fallback to system Bluetooth settings if navigation to specific media source fails
             val fallbackIntent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
@@ -108,7 +108,7 @@ class ConnectivityManagerImpl(private val context: Context) : ConnectivityManage
     }
 
     override fun openProjectionSettings() {
-        // 使用字符串常量以确保兼容性，因为部分 API 级别可能无法直接引用该常量
+        // Use string constant to ensure compatibility as some API levels might not reference this constant directly
         val ACTION_CONNECTED_DEVICE = "android.settings.CONNECTED_DEVICE_SETTINGS"
         val intent = Intent(ACTION_CONNECTED_DEVICE).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -118,7 +118,7 @@ class ConnectivityManagerImpl(private val context: Context) : ConnectivityManage
             context.startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()
-            // 如果跳转“已连接设备”失败，回退到系统蓝牙设置界面
+            // Fallback to system Bluetooth settings if navigation to "Connected Devices" fails
             val fallbackIntent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
