@@ -33,21 +33,26 @@ graph TD
 *   **Session 交互**: 通过 `MediaLibrarySession` 管理播放状态，并配置 `sessionActivity`。
 *   **跨应用深度跳转**: 在设置应用中利用 `MediaController` 获取 `sessionActivity` 的 `PendingIntent`，实现从设置到音乐播放页面的安全跳转。
 
-### 2. 精准系统导航与 Intent 适配
-针对 AAOS 场景实现了多种精准跳转方案：
-*   **蓝牙音频**: 使用 `android.car.intent.action.MEDIA_TEMPLATE` 配合 `EXTRA_MEDIA_COMPONENT` 直接定位至系统媒体中心的蓝牙音源。
-*   **连接管理**: 实现了跳转至“已连接设备 (Connected Devices)”页面，用于管理投屏和蓝牙连接。
-*   **Android 14+ 适配**: 正确处理了后台 Activity 启动限制，配置了 `PendingIntentBackgroundActivityStartMode`。
+### 2. MVI 架构与响应式 UI 刷新
+项目采用了 **MVI (Model-View-Intent)** 模式增强了数据流的可预测性：
+*   **Intent**: UI 层通过发送明确的 `Intent`（如 `DrivingIntent`）来表达用户操作。
+*   **State**: ViewModel 统一维护单一可信源的 `StateFlow`，确保 UI 状态的一致性。
+*   **单向数据流**: 严格遵循 UDF（单向数据流）原则，简化了复杂设置项的逻辑维护。
 
-### 3. Navigation 与状态保持
+### 3. LocaleManager 全局语言切换
+实现了不重启 Activity 即可快速切换中英文的功能：
+*   **动态配置**: 利用 `createConfigurationContext` 动态覆盖 Context，实现 App 内语言独立于系统语言切换。
+*   **无感知刷新**: 结合 Compose `CompositionLocal` 机制，实现切换语言后 UI 毫秒级即时更新，无需界面重绘或闪烁。
+
+### 4. Navigation 与状态保持
 *   集成 **Jetpack Navigation Compose** 构建路由系统。
 *   结合 **HorizontalPager** 实现驾驶、舒适、安全、互联四个主页面的平滑切换。
 *   确保了在页面切换及应用挂起时，各页面的滑动位置和 UI 状态能得到准确保持。
 
 ## 📁 目录结构
 
-*   `:app-settings` (原 `automotive`): 车载设置主 App 模块。
-*   `:app-music` (原 `mobile`): 模拟音乐播放器 App，用于验证跨应用跳转。
+*   `:app-settings`: 车载设置主 App 模块。
+*   `:app-music`: 模拟音乐播放器 App，用于验证跨应用跳转。
 *   `:shared`: 共享模块，包含 `MyMusicService`、通用数据模型及 UI 组件。
 
 ## 🛠 技术栈
