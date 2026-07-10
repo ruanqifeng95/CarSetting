@@ -33,6 +33,7 @@ fun CarNavGraph(
                     1 -> ComfortSettingsTab()
                     2 -> SafetySettingsTab()
                     3 -> ConnectivitySettingsTab()
+                    4 -> GeneralSettingsTab()
                 }
             }
         }

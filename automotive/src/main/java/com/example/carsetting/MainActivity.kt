@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CarSettingsScreen() {
     val navController = rememberNavController()
-    val pagerState = rememberPagerState(pageCount = { 4 })
+    val pagerState = rememberPagerState(pageCount = { 5 })
     val scope = rememberCoroutineScope()
     
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -129,6 +129,20 @@ fun CarSettingsScreen() {
                     },
                     text = { Text("互联") },
                     icon = { Icon(Icons.Default.Link, contentDescription = null) }
+                )
+                Tab(
+                    selected = selectedTab == 4,
+                    onClick = {
+                        scope.launch {
+                            if (!isMainScreen) navController.popBackStack()
+                            pagerState.animateScrollToPage(
+                                page = 4,
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        }
+                    },
+                    text = { Text("通用") },
+                    icon = { Icon(Icons.Default.Settings, contentDescription = null) }
                 )
             }
 
